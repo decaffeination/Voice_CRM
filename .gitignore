@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+ENV/
+
+# 环境变量与本地配置（提交 config.example.yaml）
+.env
+.env.local
+.env.*.local
+config.yaml
+
+# 测试与覆盖率
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 日志与运行时数据
+logs/
+*.log
+main_server/data/logs/
+main_server/data/sqlite/
+main_server/data/chroma/
+main_server/data/temp_audio/
+main_server/data/checkpoints/
+*.db
+*.sqlite3
+
+# 模型权重（通过 download_* 脚本获取，勿提交）
+main_server/data/models/
+!main_server/data/models/.gitkeep
+
+# Node / 前端
+web_server/node_modules/
+web_server/dist/
+web_server/.vite/
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# HuggingFace / ModelScope 缓存
+.cache/
+**/.cache/

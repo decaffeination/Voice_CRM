@@ -1,0 +1,64 @@
+# Voice-CRM 全栈部署（PostgreSQL + API + 前端 Nginx）
+#
+# 准备:
+#   copy config.example.yaml config.yaml   # 可选，容器内默认用 config.example.yaml
+#   copy .env.example .env                 # 必填 LLM_API_KEY、生产环境 JWT_SECRET_KEY
+#
+# 启动:
+#   docker compose up -d --build
+#
+# 访问:
+#   前端 http://localhost:8080
+#   API  http://localhost:8000/docs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: voice-crm-postgres
+    environment:
+      POSTGRES_USER: voice_crm
+      POSTGRES_PASSWORD: voice_crm
+      POSTGRES_DB: voice_crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - voice_crm_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voice_crm -d voice_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: voice-crm-api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://voice_crm:voice_crm@postgres:5432/voice_crm
+    volumes:
+      - voice_crm_data:/app/main_server/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    container_name: voice-crm-web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  voice_crm_pg_data:
+  voice_crm_data:

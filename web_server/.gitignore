@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# vue-tsc -b 从 vite.config.ts 编译出的产物
+vite.config.js
+vite.config.d.ts
+tsconfig.tsbuildinfo

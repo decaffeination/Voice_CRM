@@ -1,0 +1,116 @@
+app:
+  name: Voice-CRM
+  env: development
+  debug: true
+  host: 0.0.0.0
+  port: 8000
+
+# 数据库：留空 url 则使用 SQLite；生产可设环境变量 DATABASE_URL
+database:
+  url: ""
+  sqlite_path: main_server/data/sqlite/voice_crm.db
+
+jwt:
+  # 生产环境请通过环境变量 JWT_SECRET_KEY 覆盖
+  secret_key: change-me-in-production-use-long-random-string
+  algorithm: HS256
+  expire_minutes: 1440
+
+# LLM: DeepSeek API（密钥请设环境变量 LLM_API_KEY，勿写入本文件）
+llm:
+  provider: deepseek
+  api_key: ""
+  base_url: https://api.deepseek.com
+  model: deepseek-chat
+
+memory:
+  history_active_rounds: 20
+  summary_trigger_count: 50
+
+providers:
+  timeout_seconds: 60
+  llm_timeout_seconds: 60
+  asr_timeout_seconds: 90
+  tts_timeout_seconds: 180
+  pipeline_timeout_seconds: 180
+  ws_idle_timeout_seconds: 300
+  max_retries: 2
+  retry_delay_seconds: 0.5
+
+logging:
+  level: INFO
+  file: main_server/data/logs/app.log
+
+knowledge:
+  docs_path: main_server/data/knowledge
+  chroma_path: main_server/data/chroma
+  collection_name: voice_crm_kb
+  chunk_size: 500
+  chunk_overlap: 50
+  top_k: 5
+  fetch_k: 20
+  rerank_enabled: true
+  hybrid_enabled: true
+  rrf_k: 60
+  min_vector_score: 0.35
+  min_rerank_score: 0.0
+  reject_empty: true
+  timeout_seconds: 30
+
+models:
+  base_path: main_server/data/models
+  asr:
+    provider: funasr
+    model_dir: SenseVoiceSmall
+    device: cpu
+  vad:
+    provider: silero-vad
+    model_dir: silero_vad
+    sample_rate: 16000
+    threshold: 0.5
+    min_silence_duration_ms: 500
+  tts:
+    # ChatTTS: 本地离线，需 python -m main_server.utils.download_chattts_model
+    # provider: chattts
+    # voice: "42"
+    # device: cpu
+    # compile: false
+    # model_dir: chattts
+    provider: edge-tts
+    voice: "zh-CN-XiaoxiaoNeural"
+    device: cpu
+    compile: false
+    model_dir: chattts
+  embedding:
+    model: BAAI/bge-small-zh-v1.5
+    cache_dir: embedding
+  rerank:
+    model: BAAI/bge-reranker-base
+    cache_dir: rerank
+
+tools:
+  email:
+    enabled: true
+    dry_run: true
+    smtp_host: ""
+    smtp_port: 587
+    smtp_user: ""
+    smtp_password: ""
+    from_address: "voice-crm@localhost"
+    use_tls: true
+  web_search:
+    enabled: true
+    max_results: 5
+    timeout_seconds: 15
+  agent:
+    max_steps: 6
+
+# CORS（生产环境请改为具体前端域名；也可用环境变量 CORS_ORIGINS 逗号分隔）
+cors:
+  allow_origins:
+    - "*"
+  allow_credentials: true
+  allow_methods:
+    - "*"
+  allow_headers:
+    - "*"

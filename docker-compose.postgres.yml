@@ -1,0 +1,25 @@
+# 仅启动 PostgreSQL（本地开发连库用）
+# 全栈 Docker 部署请使用项目根目录 docker-compose.yml
+#
+#   docker compose -f docker-compose.postgres.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: voice-crm-postgres
+    environment:
+      POSTGRES_USER: voice_crm
+      POSTGRES_PASSWORD: voice_crm
+      POSTGRES_DB: voice_crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - voice_crm_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voice_crm -d voice_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  voice_crm_pg_data:

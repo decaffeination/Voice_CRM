@@ -1,0 +1,29 @@
+.admin-page {
+  width: 100%;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #888;
+}
+.table-card,
+.content-card {
+  border-radius: 14px;
+}
+:deep(.action-btns) {
+  display: flex;
+  gap: 4px;
+}
