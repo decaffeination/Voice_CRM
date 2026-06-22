@@ -89,8 +89,8 @@ flowchart TB
 ### 1. 获取代码与依赖
 
 ```bash
-git clone https://github.com/<your-username>/Voice-CRM.git
-cd Voice-CRM
+git clone https://github.com/<your-username>/Voice_CRM.git
+cd Voice_CRM
 
 python -m venv .venv
 # Windows
@@ -178,7 +178,7 @@ docker compose exec api python scripts/ingest_knowledge.py
 ## 目录结构
 
 ```
-Voice-CRM/
+Voice_CRM/
 ├── agent/              # LangGraph Agent 与工具
 ├── alembic/            # 数据库迁移
 ├── deploy/             # Dockerfile、Nginx
