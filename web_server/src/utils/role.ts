@@ -5,9 +5,18 @@ const ROLE_LABELS: Record<string, string> = {
   CustomerService: '客服',
 }
 
+/** 与后端 Role.ALL 一致的角色优先级（用于展示主角色） */
+export const ROLE_PRIORITY = [
+  'Admin',
+  'SalesManager',
+  'Sales',
+  'CustomerService',
+] as const
+
+export { ROLE_LABELS }
+
 export function getPrimaryRoleLabel(roles: string[]): string {
-  const priority = ['Admin', 'SalesManager', 'Sales', 'CustomerService']
-  for (const code of priority) {
+  for (const code of ROLE_PRIORITY) {
     if (roles.includes(code)) return ROLE_LABELS[code] || code
   }
   return roles[0] ? ROLE_LABELS[roles[0]] || roles[0] : '用户'

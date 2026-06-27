@@ -34,6 +34,16 @@ def get_roles_by_codes(session: Session, codes: list[str]) -> list[RoleModel]:
     return session.query(RoleModel).filter(RoleModel.code.in_(codes)).all()
 
 
+def count_users_by_role_code(session: Session, role_code: str) -> int:
+    return (
+        session.query(User)
+        .join(User.roles)
+        .filter(RoleModel.code == role_code)
+        .distinct()
+        .count()
+    )
+
+
 def count_admin_users(session: Session) -> int:
     return (
         session.query(User)

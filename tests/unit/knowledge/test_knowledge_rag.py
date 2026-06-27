@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from main_server.Knowledge.bm25_index import BM25Index, tokenize
-from main_server.Knowledge.hybrid import reciprocal_rank_fusion
+from main_server.knowledge.bm25_index import BM25Index, tokenize
+from main_server.knowledge.hybrid import reciprocal_rank_fusion
 from main_server.services.knowledge_service import KnowledgeService
 
 
@@ -91,20 +91,21 @@ class TestKnowledgeServiceAgent:
 
 
 class TestRetrieverFilter:
-    @patch("main_server.Knowledge.retriever._rerank")
-    @patch("main_server.Knowledge.retriever._hybrid_search")
-    @patch("main_server.Knowledge.retriever.get_settings")
+    @patch("main_server.knowledge.retriever._rerank")
+    @patch("main_server.knowledge.retriever._hybrid_search")
+    @patch("main_server.knowledge.retriever.get_settings")
     def test_filters_low_vector_score(
         self,
         mock_settings: MagicMock,
         mock_hybrid: MagicMock,
         mock_rerank: MagicMock,
     ) -> None:
-        from main_server.Knowledge import retriever
+        from main_server.knowledge import retriever
 
         settings = MagicMock()
         settings.knowledge.top_k = 5
         settings.knowledge.fetch_k = 20
+        settings.knowledge.rerank_top_k = 5
         settings.knowledge.rerank_enabled = False
         settings.knowledge.hybrid_enabled = True
         settings.knowledge.min_vector_score = 0.5
@@ -116,8 +117,41 @@ class TestRetrieverFilter:
             {"id": "2", "content": "b", "score": 0.2},
         ]
 
-        with patch("main_server.Knowledge.retriever.guard_knowledge", side_effect=lambda _op, fn: fn()):
+        with patch("main_server.knowledge.retriever.guard_knowledge", side_effect=lambda _op, fn: fn()):
             docs = retriever.search("测试")
 
         assert len(docs) == 1
         assert docs[0]["id"] == "1"
+
+    @patch("main_server.knowledge.retriever._rerank")
+    @patch("main_server.knowledge.retriever._hybrid_search")
+    @patch("main_server.knowledge.retriever.get_settings")
+    def test_rerank_top_k(
+        self,
+        mock_settings: MagicMock,
+        mock_hybrid: MagicMock,
+        mock_rerank: MagicMock,
+    ) -> None:
+        from main_server.knowledge import retriever
+
+        settings = MagicMock()
+        settings.knowledge.top_k = 5
+        settings.knowledge.fetch_k = 20
+        settings.knowledge.rerank_top_k = 2
+        settings.knowledge.rerank_enabled = True
+        settings.knowledge.hybrid_enabled = True
+        settings.knowledge.min_vector_score = 0.0
+        settings.knowledge.min_rerank_score = 0.0
+        mock_settings.return_value = settings
+
+        mock_hybrid.return_value = [{"id": "1", "content": "a", "score": 0.9}]
+        mock_rerank.return_value = [
+            {"id": "1", "content": "a", "rerank_score": 0.9},
+            {"id": "2", "content": "b", "rerank_score": 0.8},
+        ]
+
+        with patch("main_server.knowledge.retriever.guard_knowledge", side_effect=lambda _op, fn: fn()):
+            retriever.search("测试")
+
+        mock_rerank.assert_called_once()
+        assert mock_rerank.call_args[0][2] == 2

@@ -12,7 +12,7 @@ import main_server.CRM.repository.customer_repo as customer_repo
 import main_server.CRM.repository.followup_repo as followup_repo
 import main_server.CRM.repository.order_repo as order_repo
 import main_server.CRM.writes.contract_write as contract_write
-import main_server.CRM.writes.curstomer_write as curstomer_write
+import main_server.CRM.writes.customer_write as customer_write
 import main_server.CRM.writes.followup_write as followup_write
 import main_server.CRM.writes.order_write as order_write
 from main_server.CRM.storage_guard import crm_db_session
@@ -345,7 +345,7 @@ class CRMService:
         owner_user_id: int | None = None,
     ) -> dict[str, Any]:
         with crm_db_session() as session:
-            result = curstomer_write.create_customer(
+            result = customer_write.create_customer(
                 session,
                 name=name,
                 contact_person=contact_person,
@@ -692,7 +692,7 @@ class CRMService:
                 session, write_type, record_id, user_id, roles
             )
             if write_type == WRITE_TYPE_CUSTOMER:
-                result = curstomer_write.update_customer(
+                result = customer_write.update_customer(
                     session, record_id, updates=updates
                 )
             elif write_type == WRITE_TYPE_FOLLOWUP:
@@ -737,7 +737,7 @@ class CRMService:
                 session, write_type, record_id, user_id, roles
             )
             if write_type == WRITE_TYPE_CUSTOMER:
-                result = curstomer_write.archive_customer(session, record_id)
+                result = customer_write.archive_customer(session, record_id)
             elif write_type == WRITE_TYPE_FOLLOWUP:
                 result = followup_write.delete_followup(session, record_id)
             elif write_type == WRITE_TYPE_CONTRACT:

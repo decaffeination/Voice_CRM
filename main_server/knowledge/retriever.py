@@ -3,10 +3,10 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
-from main_server.Knowledge.bm25_index import bm25_search, invalidate_bm25_cache
-from main_server.Knowledge.hybrid import reciprocal_rank_fusion
-from main_server.Knowledge.storage_guard import guard_knowledge
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.bm25_index import bm25_search, invalidate_bm25_cache
+from main_server.knowledge.hybrid import reciprocal_rank_fusion
+from main_server.knowledge.storage_guard import guard_knowledge
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.config.settings import get_settings
 from main_server.core.logger import logger
 from main_server.utils.hf_model_loader import load_cross_encoder
@@ -15,16 +15,17 @@ from main_server.utils.hf_model_loader import load_cross_encoder
 def search(query: str, top_k: int | None = None) -> list[dict[str, Any]]:
     settings = get_settings()
     limit = top_k or settings.knowledge.top_k
+    rerank_limit = settings.knowledge.rerank_top_k or limit
 
     def _search() -> list[dict[str, Any]]:
-        fetch_k = max(limit, settings.knowledge.fetch_k)
+        fetch_k = max(limit, rerank_limit, settings.knowledge.fetch_k)
         if settings.knowledge.hybrid_enabled:
             docs = _hybrid_search(query, fetch_k)
         else:
             docs = _vector_search(query, fetch_k)
 
         if settings.knowledge.rerank_enabled:
-            docs = _rerank(query, docs, limit)
+            docs = _rerank(query, docs, rerank_limit)
         else:
             docs = docs[:limit]
 
@@ -33,10 +34,11 @@ def search(query: str, top_k: int | None = None) -> list[dict[str, Any]]:
     docs = guard_knowledge("知识库检索", _search)
     top_score = _primary_score(docs[0]) if docs else None
     logger.info(
-        "knowledge.search query_len=%s top_k=%s hit_count=%s top_score=%s "
+        "knowledge.search query_len=%s top_k=%s rerank_top_k=%s hit_count=%s top_score=%s "
         "hybrid=%s rerank=%s",
         len(query),
         limit,
+        rerank_limit,
         len(docs),
         top_score,
         settings.knowledge.hybrid_enabled,

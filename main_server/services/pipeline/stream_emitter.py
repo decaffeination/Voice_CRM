@@ -27,10 +27,18 @@ class AsyncWsStreamEmitter:
             return
         self._schedule(self._send(self._ws, "agent_text_delta", delta=delta))
 
-    def on_text_final(self, text: str, *, intent: str | None = None) -> None:
+    def on_text_final(
+        self,
+        text: str,
+        *,
+        intent: str | None = None,
+        citations: list[dict[str, Any]] | None = None,
+    ) -> None:
         payload: dict[str, Any] = {"text": text}
         if intent is not None:
             payload["intent"] = intent
+        if citations:
+            payload["citations"] = citations
         self._schedule(self._send(self._ws, "agent_text", **payload))
 
     def on_tts_chunk(

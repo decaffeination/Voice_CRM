@@ -47,6 +47,7 @@ class AgentState(TypedDict, total=False):
     tool_calls: list[dict[str, Any]] | None
     tool_results: list[Any]
     step_count: int
+    citations: list[dict[str, Any]]
 
 
 def default_customer_context() -> CustomerContext:

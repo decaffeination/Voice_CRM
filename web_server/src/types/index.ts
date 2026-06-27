@@ -14,6 +14,16 @@ export interface SessionInfo {
   last_active: string | null
 }
 
+export interface KnowledgeCitation {
+  index: number
+  ref: string
+  source: string
+  doc_id?: string | null
+  page?: number | null
+  snippet?: string
+  score?: number | null
+}
+
 export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
@@ -21,6 +31,7 @@ export interface ChatMessage {
   channel?: 'text' | 'voice'
   intent?: string | null
   transcript?: string
+  citations?: KnowledgeCitation[]
 }
 
 export interface HistoryMessageRecord {
@@ -44,4 +55,5 @@ export interface WsMessage {
   sentence?: string
   total_chunks?: number
   with_tts?: boolean
+  citations?: KnowledgeCitation[]
 }

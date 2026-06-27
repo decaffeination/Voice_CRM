@@ -7,8 +7,8 @@ import re
 from functools import lru_cache
 from typing import Any
 
-from main_server.Knowledge.storage_guard import guard_knowledge
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.storage_guard import guard_knowledge
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.core.logger import logger
 
 

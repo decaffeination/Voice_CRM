@@ -83,11 +83,21 @@ def _parse_ddg_html(html: str, limit: int) -> list[dict]:
     return results
 
 
+from typing import Any
+
 _web_search_provider: WebSearchProvider | None = None
+_tavily_search_provider: Any = None
 
 
-def get_web_search_provider() -> WebSearchProvider:
-    global _web_search_provider
+def get_web_search_provider() -> Any:
+    global _web_search_provider, _tavily_search_provider
+    settings = get_settings().tools.web_search
+    if settings.provider == "tavily" and settings.tavily_api_key.strip():
+        if _tavily_search_provider is None:
+            from main_server.providers.Tools.tavily_search import TavilySearchProvider
+
+            _tavily_search_provider = TavilySearchProvider()
+        return _tavily_search_provider
     if _web_search_provider is None:
         _web_search_provider = WebSearchProvider()
     return _web_search_provider

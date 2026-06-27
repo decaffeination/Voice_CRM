@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from main_server.Knowledge.chunker import chunk_documents
-from main_server.Knowledge.doc_parser import SUPPORTED_SUFFIXES, parse_file
-from main_server.Knowledge.doc_registry import (
+from main_server.knowledge.chunker import chunk_documents
+from main_server.knowledge.doc_parser import SUPPORTED_SUFFIXES, parse_file
+from main_server.knowledge.doc_registry import (
     build_doc_id,
     compute_file_hash,
     get_document,
     upsert_active_document,
 )
-from main_server.Knowledge.retriever import invalidate_index_cache
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.retriever import invalidate_index_cache
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.config.settings import get_settings
 from main_server.core.exceptions import KnowledgeError
 from main_server.core.logger import logger

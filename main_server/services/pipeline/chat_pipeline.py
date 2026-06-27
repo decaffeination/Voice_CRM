@@ -32,6 +32,7 @@ class ChatPipelineResult:
     tool_result: Any = None
     audio_bytes: bytes | None = None
     session_title: str | None = None
+    citations: list[dict[str, Any]] | None = None
 
 
 class ChatPipeline:
@@ -115,6 +116,7 @@ class ChatPipeline:
             tool_result=result.tool_result,
             audio_bytes=audio_bytes,
             session_title=result.session_title,
+            citations=result.citations,
         )
 
     async def run_stream_async(
@@ -187,6 +189,7 @@ class ChatPipeline:
             intent=intent,
             tool_result=result.tool_result,
             session_title=title_info.title if title_info else None,
+            citations=result.citations,
         )
 
     async def _stream_tts(

@@ -11,6 +11,15 @@ export async function sendChat(message: string, sessionId?: string | null, withA
     audio_base64: string | null
     intent: string | null
     session_title: string | null
+    citations?: Array<{
+      index: number
+      ref: string
+      source: string
+      doc_id?: string | null
+      page?: number | null
+      snippet?: string
+      score?: number | null
+    }>
   }>(
     '/chat',
     {
@@ -39,6 +48,15 @@ export async function uploadAudio(
     audio_base64: string | null
     intent: string | null
     session_title: string | null
+    citations?: Array<{
+      index: number
+      ref: string
+      source: string
+      doc_id?: string | null
+      page?: number | null
+      snippet?: string
+      score?: number | null
+    }>
   }>('/audio', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: withAudio ? AUDIO_REQUEST_TIMEOUT_MS : undefined,

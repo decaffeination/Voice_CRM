@@ -286,6 +286,7 @@ async function sendText() {
       content: res.reply,
       intent: res.intent,
       channel: 'text',
+      citations: res.citations,
     })
     audioHint?.destroy()
     if (withAudio.value) {
@@ -340,6 +341,7 @@ async function processAudioFile(file: File, hintText = '正在识别语音…') 
       content: res.reply,
       intent: res.intent,
       channel: 'voice',
+      citations: res.citations,
     })
     if (res.audio_base64 && withAudio.value) {
       chatStore.setSendingStage('tts')
@@ -448,6 +450,7 @@ function handleWsMessage(msg: {
       chatStore.updateMessage(sessionId, streamingAssistantId, {
         content: msg.text,
         intent: msg.intent,
+        citations: msg.citations,
       })
     } else {
       chatStore.addMessage(sessionId, {
@@ -456,6 +459,7 @@ function handleWsMessage(msg: {
         content: msg.text,
         intent: msg.intent,
         channel: 'voice',
+        citations: msg.citations,
       })
     }
     streamingAssistantId = null

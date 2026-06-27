@@ -156,25 +156,31 @@ def _enforce_citations(
     return _append_citation_footer(text, citations)
 
 
-def _emit_text_final(text: str, state: AgentState) -> None:
+def _emit_text_final(
+    text: str,
+    state: AgentState,
+    *,
+    citations: list[dict[str, Any]] | None = None,
+) -> None:
     emitter = get_stream_emitter()
     if emitter is not None:
         intent = state.get("intent") or (
             (state.get("conversation_state") or {}).get("current_intent")
         )
-        emitter.on_text_final(text, intent=intent)
+        emitter.on_text_final(text, intent=intent, citations=citations)
 
 
 def response_node(state: AgentState) -> dict[str, Any]:
     if state.get("final_response"):
         text = state["final_response"]
-        _emit_text_final(text, state)
-        return {"final_response": text}
+        citations = state.get("citations") or []
+        _emit_text_final(text, state, citations=citations or None)
+        return {"final_response": text, "citations": citations}
 
     templated = _template_response(state)
     if templated is not None:
         _emit_text_final(templated, state)
-        return {"final_response": templated}
+        return {"final_response": templated, "citations": []}
 
     user_input = state.get("user_input", "")
     tool_results = state.get("tool_results") or []
@@ -212,5 +218,5 @@ def response_node(state: AgentState) -> dict[str, Any]:
     if citations:
         final_response = _enforce_citations(final_response, citations, messages)
 
-    _emit_text_final(final_response, state)
-    return {"final_response": final_response}
+    _emit_text_final(final_response, state, citations=citations or None)
+    return {"final_response": final_response, "citations": citations}

@@ -8,6 +8,7 @@ from alembic.config import Config
 from main_server.core.auth.auth_service import hash_password
 from main_server.core.auth.permission import DEFAULT_ROLE_SEEDS, Role
 from main_server.core.logger import logger
+from main_server.services.rbac_service import seed_permissions, seed_role_permissions
 from main_server.config.settings import PROJECT_ROOT, get_settings
 from main_server.DB import db_session
 from main_server.DB.models import Role as RoleModel
@@ -69,6 +70,8 @@ def seed_default_user() -> None:
 def init_database() -> None:
     run_migrations()
     seed_roles()
+    seed_permissions()
+    seed_role_permissions()
     seed_default_user()
 
 

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from main_server.Knowledge.chunker import chunk_documents
-from main_server.Knowledge.doc_parser import parse_file
+from main_server.knowledge.chunker import chunk_documents
+from main_server.knowledge.doc_parser import parse_file
 from main_server.core.exceptions import KnowledgeError
 
 
@@ -43,3 +43,26 @@ class TestChunker:
         chunks = chunk_documents(docs)
         assert len(chunks) >= 1
         assert chunks[0].get("content")
+
+    def test_chunk_respects_paragraph_boundary(self) -> None:
+        from main_server.knowledge.chunker import chunk_text
+
+        text = ("段落A内容。" * 15) + "\n\n" + ("段落B内容。" * 15)
+        chunks = chunk_text(text, chunk_size=80, chunk_overlap=10)
+        assert len(chunks) >= 2
+        assert any("段落A" in c for c in chunks)
+        assert any("段落B" in c for c in chunks)
+
+    def test_chunk_respects_heading_boundary(self) -> None:
+        from main_server.knowledge.chunker import chunk_text
+
+        text = (
+            "## 报销制度\n"
+            + ("报销需提交发票。" * 15)
+            + "\n\n## 请假制度\n"
+            + ("请假需提前申请。" * 15)
+        )
+        chunks = chunk_text(text, chunk_size=120, chunk_overlap=10)
+        assert len(chunks) >= 2
+        assert any("报销" in c for c in chunks)
+        assert any("请假" in c for c in chunks)

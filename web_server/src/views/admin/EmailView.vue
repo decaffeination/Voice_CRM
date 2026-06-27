@@ -43,21 +43,29 @@
               <n-input-number v-model:value="smtpForm.port" :min="1" :max="65535" style="width: 100%" />
             </n-form-item>
             <n-form-item label="发件邮箱">
-              <n-input v-model:value="smtpForm.from" :placeholder="emailSettings?.from_address || 'noreply@example.com'" />
+              <n-input v-model:value="smtpForm.from" placeholder="noreply@example.com" />
             </n-form-item>
             <n-form-item label="用户名">
               <n-input v-model:value="smtpForm.username" placeholder="可选" />
             </n-form-item>
             <n-form-item label="密码">
-              <n-input v-model:value="smtpForm.password" type="password" placeholder="可选" />
+              <n-input
+                v-model:value="smtpForm.password"
+                type="password"
+                :placeholder="emailSettings?.smtp_password_set ? '已配置，留空则不修改' : '可选'"
+              />
+            </n-form-item>
+            <n-form-item label="TLS">
+              <n-switch v-model:value="smtpForm.use_tls" />
             </n-form-item>
           </n-form>
           <n-space>
-            <n-button type="primary" @click="saveSmtpMock">保存 SMTP（Mock）</n-button>
+            <n-button type="primary" :loading="smtpSaving" @click="saveSmtpSettings">保存 SMTP</n-button>
             <n-button :loading="testing" @click="testSend">测试发送</n-button>
           </n-space>
           <n-alert type="info" style="margin-top: 16px" :show-icon="false">
-            当前后端 SMTP 字段：{{ emailSettings?.smtp_configured ? '已配置' : '未配置' }}；
+            SMTP：{{ emailSettings?.smtp_configured ? '已配置' : '未配置' }}；
+            密码：{{ emailSettings?.smtp_password_set ? '已设置' : '未设置' }}；
             发件地址：{{ emailSettings?.from_address || '-' }}
           </n-alert>
         </n-card>
@@ -85,7 +93,9 @@ import {
 } from 'naive-ui'
 import {
   fetchEmailSettings,
+  testEmailSend,
   updateEmailSettings,
+  updateSmtpSettings,
   type EmailSettings,
 } from '@/api/admin'
 
@@ -94,13 +104,15 @@ const message = useMessage()
 const emailSettings = ref<EmailSettings | null>(null)
 const emailForm = reactive({ enabled: true, dry_run: true })
 const smtpForm = reactive({
-  host: 'smtp.localhost',
+  host: '',
   port: 587,
   from: '',
   username: '',
   password: '',
+  use_tls: true,
 })
 const emailSaving = ref(false)
+const smtpSaving = ref(false)
 const testing = ref(false)
 
 async function loadEmailSettings() {
@@ -108,7 +120,12 @@ async function loadEmailSettings() {
     emailSettings.value = await fetchEmailSettings()
     emailForm.enabled = emailSettings.value.enabled
     emailForm.dry_run = emailSettings.value.dry_run
+    smtpForm.host = emailSettings.value.smtp_host || ''
+    smtpForm.port = emailSettings.value.smtp_port || 587
     smtpForm.from = emailSettings.value.from_address || ''
+    smtpForm.username = emailSettings.value.smtp_user || ''
+    smtpForm.use_tls = emailSettings.value.use_tls
+    smtpForm.password = ''
   } catch {
     message.error('加载邮件设置失败')
   }
@@ -129,18 +146,47 @@ async function saveEmailSettings() {
   }
 }
 
-function saveSmtpMock() {
-  message.success('SMTP 配置已保存（Mock，待后端接口对接）')
+async function saveSmtpSettings() {
+  smtpSaving.value = true
+  try {
+    const payload: Parameters<typeof updateSmtpSettings>[0] = {
+      smtp_host: smtpForm.host,
+      smtp_port: smtpForm.port,
+      smtp_user: smtpForm.username,
+      from_address: smtpForm.from,
+      use_tls: smtpForm.use_tls,
+    }
+    if (smtpForm.password) {
+      payload.smtp_password = smtpForm.password
+    }
+    emailSettings.value = await updateSmtpSettings(payload)
+    smtpForm.password = ''
+    message.success('SMTP 配置已保存')
+  } catch {
+    message.error('保存 SMTP 配置失败')
+  } finally {
+    smtpSaving.value = false
+  }
 }
 
 async function testSend() {
+  const to = smtpForm.from || emailSettings.value?.from_address
+  if (!to || !to.includes('@')) {
+    message.warning('请先填写有效的发件/测试邮箱')
+    return
+  }
   testing.value = true
-  await new Promise((r) => setTimeout(r, 800))
-  testing.value = false
-  if (emailForm.dry_run) {
-    message.info('测试模式：邮件已模拟发送（Mock）')
-  } else {
-    message.success('测试邮件发送成功（Mock）')
+  try {
+    const result = await testEmailSend(to)
+    if (result.sent) {
+      message.success(result.dry_run ? '测试模式：邮件已模拟发送' : '测试邮件发送成功')
+    } else {
+      message.error(result.error || '测试发送失败')
+    }
+  } catch {
+    message.error('测试发送失败')
+  } finally {
+    testing.value = false
   }
 }
 

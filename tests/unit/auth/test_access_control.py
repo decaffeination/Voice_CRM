@@ -12,7 +12,7 @@ from main_server.core.auth.access_control import (
 )
 from main_server.core.auth.permission import Role
 from main_server.core.exceptions import PermissionDeniedError
-from main_server.CRM.writes.curstomer_write import create_customer
+from main_server.CRM.writes.customer_write import create_customer
 from main_server.DB import db_session
 from main_server.DB.models import Customer
 

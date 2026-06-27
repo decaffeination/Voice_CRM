@@ -11,6 +11,7 @@ from main_server.DB.models.employee import Employee
 from main_server.DB.models.followup import Followup
 from main_server.DB.models.knowledge_document import KnowledgeDocumentORM
 from main_server.DB.models.order import Order
+from main_server.DB.models.permission import PermissionORM, role_permissions
 from main_server.DB.models.role import Role, user_roles
 from main_server.DB.models.user import User
 
@@ -19,6 +20,8 @@ __all__ = [
     "User",
     "Role",
     "user_roles",
+    "PermissionORM",
+    "role_permissions",
     "Customer",
     "Employee",
     "Contract",

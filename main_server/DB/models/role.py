@@ -4,6 +4,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, fun
 from sqlalchemy.orm import relationship
 
 from main_server.DB.base import Base
+from main_server.DB.models.permission import role_permissions
 
 user_roles = Table(
     "user_roles",
@@ -33,3 +34,8 @@ class Role(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     users = relationship("User", secondary=user_roles, back_populates="roles")
+    permissions = relationship(
+        "PermissionORM",
+        secondary=role_permissions,
+        lazy="selectin",
+    )

@@ -8,6 +8,7 @@ from typing import Any, Iterator
 import httpx
 
 from main_server.config.settings import get_settings
+from main_server.services.runtime_settings import runtime_settings
 from main_server.core.exceptions import ConfigError, LLMError
 from main_server.core.logger import logger
 from main_server.core.provider_errors import raise_llm_error
@@ -21,7 +22,7 @@ _PROVIDER = "deepseek"
 
 class DeepSeekLLM(BaseLLM):
     def __init__(self) -> None:
-        settings = get_settings().llm
+        settings = runtime_settings.get_llm_settings()
         self._api_key = settings.api_key
         self._base_url = settings.base_url.rstrip("/")
         self._model = settings.model

@@ -3,15 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import main_server.Knowledge.ingest as ingest_module
-import main_server.Knowledge.retriever as retriever_module
-from main_server.Knowledge.doc_registry import (
+import main_server.knowledge.ingest as ingest_module
+import main_server.knowledge.retriever as retriever_module
+from main_server.knowledge.doc_registry import (
     get_document as get_document_record,
     list_documents as list_document_records,
     mark_document_deleted,
 )
-from main_server.Knowledge.retriever import invalidate_index_cache
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.retriever import invalidate_index_cache
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.config.settings import get_settings
 from main_server.core.audit import audit_log
 from main_server.core.exceptions import KnowledgeError, NotFoundError
@@ -187,6 +187,7 @@ class KnowledgeService:
             metadata = doc.get("metadata") or {}
             source = metadata.get("source", "unknown")
             page = metadata.get("page")
+            doc_id = metadata.get("doc_id")
             snippet = (doc.get("content") or "").strip()
             if len(snippet) > 120:
                 snippet = snippet[:120] + "…"
@@ -195,6 +196,7 @@ class KnowledgeService:
                     "index": index,
                     "ref": f"[{index}]",
                     "source": source,
+                    "doc_id": doc_id,
                     "page": page if page else None,
                     "snippet": snippet,
                     "score": doc.get("rerank_score") or doc.get("score"),
@@ -255,6 +257,10 @@ class KnowledgeService:
             "last_updated": last_updated,
             "kb_status": kb_status,
             "top_k": settings.knowledge.top_k,
+            "fetch_k": settings.knowledge.fetch_k,
+            "rerank_top_k": settings.knowledge.rerank_top_k,
+            "min_vector_score": settings.knowledge.min_vector_score,
+            "min_rerank_score": settings.knowledge.min_rerank_score,
             "rerank_enabled": settings.knowledge.rerank_enabled,
             "hybrid_enabled": settings.knowledge.hybrid_enabled,
         }

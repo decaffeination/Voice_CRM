@@ -19,7 +19,7 @@ from main_server.config.constants import (
 from main_server.core.auth.user_service import create_user
 from main_server.core.auth.permission import Role
 from main_server.core.exceptions import PermissionDeniedError
-from main_server.CRM.writes.curstomer_write import create_customer
+from main_server.CRM.writes.customer_write import create_customer
 from main_server.CRM.writes.followup_write import create_followup
 from main_server.DB import Base, db_session
 from main_server.services.crm_service import crm_service

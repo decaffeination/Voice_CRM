@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import base64
 
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
@@ -27,6 +29,7 @@ class ChatResponse(BaseModel):
     audio_base64: str | None = None
     intent: str | None = None
     session_title: str | None = None
+    citations: list[dict[str, Any]] = Field(default_factory=list)
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -76,4 +79,5 @@ async def chat(
         audio_base64=audio_base64,
         intent=result.intent,
         session_title=result.session_title,
+        citations=result.citations or [],
     )

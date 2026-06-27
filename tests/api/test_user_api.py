@@ -159,6 +159,9 @@ class TestUserCRUD:
         assert resp.status_code == 200
         codes = {item["code"] for item in resp.json()}
         assert codes == set(Role.ALL)
+        for item in resp.json():
+            assert "user_count" in item
+            assert isinstance(item["user_count"], int)
 
     def test_list_users_admin_only(self, user_client: TestClient) -> None:
         token = login_token(user_client)

@@ -60,7 +60,9 @@ def _resolve_factory(
 
 
 def get_llm_provider() -> BaseLLM:
-    name = get_settings().llm.provider
+    from main_server.services.runtime_settings import runtime_settings
+
+    name = runtime_settings.get_llm_settings().provider
     if name not in _llm_instances:
         factory = _resolve_factory(
             kind="LLM", configured=name, factories=_llm_factories

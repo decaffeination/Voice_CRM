@@ -20,9 +20,9 @@ from main_server.services.runtime_settings import runtime_settings
 
 @pytest.fixture(autouse=True)
 def reset_runtime_settings() -> None:
-    runtime_settings._email_overrides.clear()
+    runtime_settings.clear_all_overrides()
     yield
-    runtime_settings._email_overrides.clear()
+    runtime_settings.clear_all_overrides()
 
 
 @pytest.fixture
@@ -110,3 +110,70 @@ class TestEmailSettingsAPI:
             json={"dry_run": True},
         )
         assert resp.status_code == 403
+
+
+class TestSmtpSettingsAPI:
+    def test_update_smtp_and_test_send(self, admin_client: TestClient) -> None:
+        headers = {"Authorization": f"Bearer {admin_client.admin_token}"}
+        patch_resp = admin_client.patch(
+            "/api/admin/settings/email/smtp",
+            headers=headers,
+            json={
+                "smtp_host": "smtp.test.local",
+                "smtp_port": 587,
+                "smtp_user": "user@test.local",
+                "smtp_password": "secret",
+                "from_address": "noreply@test.local",
+                "use_tls": True,
+            },
+        )
+        assert patch_resp.status_code == 200
+        body = patch_resp.json()
+        assert body["smtp_host"] == "smtp.test.local"
+        assert body["smtp_password_set"] is True
+        assert "secret" not in str(body)
+
+        test_resp = admin_client.post(
+            "/api/admin/settings/email/test",
+            headers=headers,
+            json={"to": "admin@test.local"},
+        )
+        assert test_resp.status_code == 200
+        assert test_resp.json()["sent"] is True
+
+
+class TestSystemSettingsAPI:
+    def test_get_and_update_system_params(self, admin_client: TestClient) -> None:
+        headers = {"Authorization": f"Bearer {admin_client.admin_token}"}
+        get_resp = admin_client.get("/api/admin/settings/system", headers=headers)
+        assert get_resp.status_code == 200
+        assert "system_name" in get_resp.json()
+
+        patch_resp = admin_client.patch(
+            "/api/admin/settings/system",
+            headers=headers,
+            json={"system_name": "测试 CRM", "token_limit": 4096},
+        )
+        assert patch_resp.status_code == 200
+        assert patch_resp.json()["system_name"] == "测试 CRM"
+        assert patch_resp.json()["token_limit"] == 4096
+
+
+class TestModelSettingsAPI:
+    def test_get_and_update_models(self, admin_client: TestClient) -> None:
+        headers = {"Authorization": f"Bearer {admin_client.admin_token}"}
+        get_resp = admin_client.get("/api/admin/settings/models", headers=headers)
+        assert get_resp.status_code == 200
+        items = get_resp.json()["items"]
+        assert len(items) >= 1
+        assert items[0]["provider"]
+
+        patch_resp = admin_client.patch(
+            "/api/admin/settings/models",
+            headers=headers,
+            json={"temperature": 0.5, "max_tokens": 2048},
+        )
+        assert patch_resp.status_code == 200
+        updated = patch_resp.json()["items"][0]
+        assert updated["temperature"] == 0.5
+        assert updated["max_tokens"] == 2048

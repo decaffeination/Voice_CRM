@@ -15,13 +15,13 @@ from main_server.core.auth.permission import Role
 from main_server.core.auth.user_service import create_user
 from main_server.core.exception_handlers import register_exception_handlers
 from main_server.DB import db_session
-from main_server.Knowledge.doc_registry import (
+from main_server.knowledge.doc_registry import (
     build_doc_id,
     compute_file_hash,
     get_document,
     list_documents,
 )
-from main_server.Knowledge.ingest import ingest_file
+from main_server.knowledge.ingest import ingest_file
 from main_server.services.knowledge_service import KnowledgeService
 
 
@@ -76,8 +76,8 @@ class TestDocRegistry:
 
 
 class TestIngestLifecycle:
-    @patch("main_server.Knowledge.ingest.get_vector_store")
-    @patch("main_server.Knowledge.ingest.invalidate_index_cache")
+    @patch("main_server.knowledge.ingest.get_vector_store")
+    @patch("main_server.knowledge.ingest.invalidate_index_cache")
     def test_reingest_same_hash_is_unchanged(
         self,
         mock_invalidate: MagicMock,
@@ -101,8 +101,8 @@ class TestIngestLifecycle:
         assert second["version"] == 1
         mock_store.add_chunks.assert_called_once()
 
-    @patch("main_server.Knowledge.ingest.get_vector_store")
-    @patch("main_server.Knowledge.ingest.invalidate_index_cache")
+    @patch("main_server.knowledge.ingest.get_vector_store")
+    @patch("main_server.knowledge.ingest.invalidate_index_cache")
     def test_reingest_changed_content_bumps_version(
         self,
         mock_invalidate: MagicMock,
@@ -148,7 +148,7 @@ class TestKnowledgeLifecycleAPI:
             "unchanged": False,
         }
 
-        from main_server.Knowledge.doc_registry import upsert_active_document
+        from main_server.knowledge.doc_registry import upsert_active_document
 
         upsert_active_document(
             doc_id=doc_id,
@@ -185,7 +185,7 @@ class TestKnowledgeLifecycleAPI:
 
     def test_delete_requires_admin(self, kb_client: TestClient, memory_db) -> None:
         doc_id = build_doc_id("x.txt")
-        from main_server.Knowledge.doc_registry import upsert_active_document
+        from main_server.knowledge.doc_registry import upsert_active_document
 
         upsert_active_document(
             doc_id=doc_id,

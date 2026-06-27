@@ -90,4 +90,4 @@ class TestResponseNodeStreaming:
 
         assert result["final_response"] == "回复"
         assert emitter.on_text_delta.call_count == 2
-        emitter.on_text_final.assert_called_once_with("回复", intent=None)
+        emitter.on_text_final.assert_called_once_with("回复", intent=None, citations=None)

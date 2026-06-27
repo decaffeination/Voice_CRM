@@ -5,6 +5,7 @@ export interface RoleInfo {
   code: string
   name: string
   description: string | null
+  user_count?: number
 }
 
 export interface CreateUserPayload {

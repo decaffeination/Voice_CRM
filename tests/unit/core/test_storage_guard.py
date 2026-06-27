@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from main_server.CRM.storage_guard import crm_db_session, guard_crm
-from main_server.Knowledge.storage_guard import guard_knowledge
+from main_server.knowledge.storage_guard import guard_knowledge
 from main_server.core.exceptions import (
     AppError,
     CRMError,

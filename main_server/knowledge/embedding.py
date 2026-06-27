@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 
-from main_server.Knowledge.storage_guard import guard_knowledge
+from main_server.knowledge.storage_guard import guard_knowledge
 from main_server.config.settings import get_settings
 from main_server.core.logger import logger
 from main_server.utils.hf_model_loader import load_sentence_transformer

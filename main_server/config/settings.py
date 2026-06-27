@@ -115,6 +115,7 @@ class KnowledgeSettings(BaseModel):
     chunk_overlap: int = 50
     top_k: int = 5
     fetch_k: int = 20
+    rerank_top_k: int = 5
     rerank_enabled: bool = True
     hybrid_enabled: bool = True
     rrf_k: int = 60
@@ -177,8 +178,10 @@ class EmailToolSettings(BaseModel):
 
 class WebSearchSettings(BaseModel):
     enabled: bool = True
+    provider: str = "duckduckgo"
     max_results: int = 5
     timeout_seconds: float = 15.0
+    tavily_api_key: str = ""
 
 
 class AgentToolSettings(BaseModel):
@@ -280,6 +283,13 @@ def _apply_env_overrides(raw: dict[str, Any]) -> dict[str, Any]:
     smtp_password = _env_first("SMTP_PASSWORD")
     if smtp_password:
         data.setdefault("tools", {}).setdefault("email", {})["smtp_password"] = smtp_password
+
+    tavily_api_key = _env_first("TAVILY_API_KEY")
+    if tavily_api_key:
+        data.setdefault("tools", {}).setdefault("web_search", {})["tavily_api_key"] = (
+            tavily_api_key
+        )
+        data.setdefault("tools", {}).setdefault("web_search", {})["provider"] = "tavily"
 
     cors_origins = _env_first("CORS_ORIGINS")
     if cors_origins:

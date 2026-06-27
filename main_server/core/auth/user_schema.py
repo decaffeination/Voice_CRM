@@ -49,3 +49,4 @@ class RoleInfo(BaseModel):
     code: str
     name: str
     description: str | None = None
+    user_count: int = 0

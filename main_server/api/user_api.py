@@ -37,6 +37,7 @@ from main_server.core.auth.user_service import (
 )
 from main_server.core.exceptions import NotFoundError
 from main_server.DB import get_db
+from main_server.DB.repositories import user_repo
 
 router = APIRouter(tags=["users"])
 
@@ -58,9 +59,14 @@ def get_me(
 
 
 @router.get("/roles", response_model=list[RoleInfo])
-def list_roles():
+def list_roles(db: Session = Depends(get_db)):
     return [
-        RoleInfo(code=code, name=name, description=desc)
+        RoleInfo(
+            code=code,
+            name=name,
+            description=desc,
+            user_count=user_repo.count_users_by_role_code(db, code),
+        )
         for code, name, desc in DEFAULT_ROLE_SEEDS
     ]
 

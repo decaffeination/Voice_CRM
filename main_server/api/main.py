@@ -14,6 +14,7 @@ from main_server.api.dashboard_api import router as dashboard_router
 from main_server.api.knowledge_api import router as knowledge_router
 from main_server.api.memory_api import router as memory_router
 from main_server.api.session_api import router as session_router
+from main_server.api.rbac_api import router as rbac_router
 from main_server.api.settings_api import router as settings_router
 from main_server.api.user_api import router as user_router
 from main_server.api.websocket.audio_ws import router as ws_router
@@ -122,6 +123,7 @@ app.include_router(dashboard_router)
 app.include_router(knowledge_router)
 app.include_router(audit_router)
 app.include_router(settings_router)
+app.include_router(rbac_router)
 app.include_router(audio_router)
 app.include_router(ws_router)
 

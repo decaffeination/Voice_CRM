@@ -5,8 +5,8 @@ from typing import Any
 
 import chromadb
 
-from main_server.Knowledge.embedding import get_embedding_function
-from main_server.Knowledge.storage_guard import guard_knowledge
+from main_server.knowledge.embedding import get_embedding_function
+from main_server.knowledge.storage_guard import guard_knowledge
 from main_server.config.settings import get_settings
 from main_server.core.logger import logger
 

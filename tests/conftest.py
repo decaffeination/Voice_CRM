@@ -36,7 +36,7 @@ from main_server.core.exceptions import (
 from main_server.core.auth.jwt_auth import create_access_token
 from main_server.core.auth.permission import Role
 from main_server.core.auth.user_service import create_user
-from main_server.CRM.writes.curstomer_write import create_customer
+from main_server.CRM.writes.customer_write import create_customer
 from main_server.DB import db_session
 from main_server.DB.models import Employee
 from main_server.utils.init_db import seed_default_user, seed_roles

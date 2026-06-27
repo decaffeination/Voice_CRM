@@ -5,7 +5,7 @@
     python scripts/ingest_knowledge.py --path main_server/data/knowledge
 
 等价于:
-    python -m main_server.Knowledge.ingest
+    python -m main_server.knowledge.ingest
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from main_server.Knowledge.ingest import main
+from main_server.knowledge.ingest import main
 
 if __name__ == "__main__":
     main()

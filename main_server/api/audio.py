@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import base64
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from pydantic import BaseModel
 
@@ -23,6 +25,7 @@ class AudioChatResponse(BaseModel):
     audio_base64: str | None = None
     intent: str | None = None
     session_title: str | None = None
+    citations: list[dict[str, Any]] = []
 
 
 @router.post("/audio", response_model=AudioChatResponse)
@@ -75,6 +78,7 @@ async def audio_chat(
             audio_base64=audio_base64,
             intent=result.intent,
             session_title=result.session_title,
+            citations=result.citations or [],
         )
     finally:
         if temp_path is not None:

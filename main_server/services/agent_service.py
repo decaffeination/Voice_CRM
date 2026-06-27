@@ -23,6 +23,7 @@ class AgentInvokeResult:
     text: str
     conversation_state: dict[str, Any]
     tool_result: Any = None
+    citations: list[dict[str, Any]] | None = None
 
 
 class AgentService:
@@ -55,6 +56,7 @@ class AgentService:
             text=final_response,
             conversation_state=updated_state,
             tool_result=result.get("tool_result"),
+            citations=result.get("citations") or [],
         )
 
 

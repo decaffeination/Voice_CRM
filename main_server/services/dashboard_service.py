@@ -16,8 +16,8 @@ from main_server.DB.models import (
 )
 from main_server.config.settings import get_settings
 from main_server.DB.database_info import database_display_name
-from main_server.Knowledge.doc_registry import list_documents as list_knowledge_docs
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.doc_registry import list_documents as list_knowledge_docs
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.services.audit_service import list_audit_logs
 from main_server.services.health_service import get_health_status
 from main_server.services.knowledge_service import knowledge_service

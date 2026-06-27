@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from main_server.Knowledge.retriever import _get_reranker
-from main_server.Knowledge.vector_store import get_vector_store
+from main_server.knowledge.retriever import _get_reranker
+from main_server.knowledge.vector_store import get_vector_store
 from main_server.config.settings import get_settings
 from main_server.core.logger import logger
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import contextvars
-from typing import Protocol
+from typing import Any, Protocol
 
 
 class StreamEmitter(Protocol):
@@ -11,7 +11,13 @@ class StreamEmitter(Protocol):
 
     def on_text_delta(self, delta: str) -> None: ...
 
-    def on_text_final(self, text: str, *, intent: str | None = None) -> None: ...
+    def on_text_final(
+        self,
+        text: str,
+        *,
+        intent: str | None = None,
+        citations: list[dict[str, Any]] | None = None,
+    ) -> None: ...
 
     def on_tts_chunk(
         self, index: int, sentence: str, audio_base64: str

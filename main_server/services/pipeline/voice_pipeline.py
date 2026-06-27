@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from agent.state import ConversationState
 from main_server.core.exceptions import PipelineError
@@ -21,6 +22,7 @@ class VoicePipelineResult:
     conversation_state: ConversationState
     intent: str | None = None
     session_title: str | None = None
+    citations: list[dict[str, Any]] = field(default_factory=list)
 
 
 class VoicePipeline:
@@ -73,6 +75,7 @@ class VoicePipeline:
             conversation_state=chat_result.conversation_state,
             intent=chat_result.intent,
             session_title=chat_result.session_title,
+            citations=chat_result.citations or [],
         )
 
 

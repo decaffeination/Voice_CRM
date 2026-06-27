@@ -49,6 +49,7 @@ knowledge:
   chunk_overlap: 50
   top_k: 5
   fetch_k: 20
+  rerank_top_k: 5
   rerank_enabled: true
   hybrid_enabled: true
   rrf_k: 60
@@ -100,6 +101,7 @@ tools:
     use_tls: true
   web_search:
     enabled: true
+    provider: duckduckgo
     max_results: 5
     timeout_seconds: 15
   agent:
